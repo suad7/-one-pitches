@@ -7,3 +7,16 @@ from flaskblog.posts.forms import PostForm
 
 
 posts = Blueprint('posts',__name__)
+
+@posts.route("/post/new", methods= ['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        pitch = Pitch(title=form.title.data, content = form.content.data, author = current_user, category = form.category.data)
+        db.session.add(pitch)
+        db.session.commit()
+        flash('Your post has been created', 'successfully ')
+        return redirect(url_for('main.home'))
+    return render_template('create_post.html',title = 'New Post', form = form, legend = 'New Post')
+
