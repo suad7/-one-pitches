@@ -6,26 +6,29 @@ from flaskblog.models import Pitch
 from flaskblog.posts.forms import PostForm
 
 
-posts = Blueprint('posts',__name__)
+posts = Blueprint('posts', __name__)
 
-@posts.route("/post/new", methods= ['GET', 'POST'])
+@posts.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        pitch = Pitch(title=form.title.data, content = form.content.data, author = current_user, category = form.category.data)
+        pitch = Pitch(title=form.title.data, content=form.content.data,
+                      author=current_user, category=form.category.data)
         db.session.add(pitch)
         db.session.commit()
         flash('Your post has been created', 'successfully ')
         return redirect(url_for('main.home'))
-    return render_template('create_post.html',title = 'New Post', form = form, legend = 'New Post')
+    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
+
 
 @posts.route("/post/<int:post_id>")
 def post(post_id):
     post = Pitch.query.get_or_404(post_id)
-    return render_template('post.html', title = post.title, post = post)
+    return render_template('post.html', title=post.title, post=post)
 
-@posts.route("/post/<int:post_id>/update", methods= ['GET', 'POST'])
+
+@posts.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_post(post_id):
     post = Pitch.query.get_or_404(post_id)
@@ -37,14 +40,14 @@ def update_post(post_id):
         post.content = form.content.data
         db.session.commit()
         flash('Your post has been updated', 'successfully')
-        return redirect(url_for('posts.post', post_id =  post.id))
+        return redirect(url_for('posts.post', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
         form.content.data = post.content
-    return render_template('create_post.html',title = 'Update Post', form = form, legend = 'Update Post')
+    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
 
-@posts.route("/post/<int:post_id>/delete", methods= ['POST'])
+@posts.route("/post/<int:post_id>/delete", methods=['POST'])
 @login_required
 def delete_post(post_id):
     post = Pitch.query.get_or_404(post_id)
@@ -54,6 +57,3 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'successfully')
     return redirect(url_for('main.home'))
-
-
-
