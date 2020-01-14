@@ -10,6 +10,3 @@ def home():
     pitches = Pitch.query.order_by(Pitch.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('home.html', pitches = pitches)
 
-@main.route("/about")
-def about():
-    return render_template('about.html', title = 'About')
